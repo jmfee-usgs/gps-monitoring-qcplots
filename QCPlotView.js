@@ -96,11 +96,14 @@ var QCPlotView = function (options) {
    *        when null, assume all have changed.
    */
   _this.render = function (changed) {
-    var c3options,
+    var axes,
+        axis,
+        c3options,
         channelMeta,
         channels,
         columns,
         data,
+        lastUnit,
         names;
 
     data = _data.get('data');
@@ -116,21 +119,45 @@ var QCPlotView = function (options) {
       return;
     }
 
+    // deep clone
+    c3options = JSON.parse(JSON.stringify(_C3_DEFAULTS));
+
+    axes = {};
+    axis = 'y';
     columns = [];
+    lastUnit = null;
     names = {};
     channels.concat(['date']).forEach(function (channel) {
+      var meta;
+      meta = channelMeta[channel];
+
       columns.push([channel].concat(data[channel]));
-      names[channel] = channelMeta[channel].title;
+      names[channel] = meta.title;
+
+      if (channel === 'date') {
+        return;
+      }
+
+      // channel axis
+      if (lastUnit !== meta.units) {
+        if (lastUnit !== null) {
+          axis = 'y2';
+        }
+        lastUnit = meta.units;
+        c3options.axis[axis].label.text = lastUnit;
+        c3options.axis[axis].show = true;
+      }
+      axes[channel] = axis;
     });
 
-    c3options = Util.extend({}, _C3_DEFAULTS, {
-      bindto: _c3El,
-      data: {
-        columns: columns,
-        names: names,
-        x: 'date'
-      }
-    });
+    c3options.bindto = _c3El;
+    c3options.data = {
+      axes: axes,
+      columns: columns,
+      names: names,
+      x: 'date'
+    };
+
     c3.generate(c3options);
   };
 
