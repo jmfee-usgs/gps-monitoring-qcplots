@@ -182,8 +182,6 @@ var QCFactory = function (options) {
     }
 
     data = _filterData(_data, options.start, options.end);
-
-    // TODO: filter requested data
     options.callback(data);
   };
 

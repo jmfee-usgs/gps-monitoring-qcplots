@@ -1,0 +1,9 @@
+.navigation {
+  overflow: hidden;
+}
+
+.plots {
+  border: 1px solid #ddd;
+  margin-right: 16px;
+  padding: 3px;
+}
