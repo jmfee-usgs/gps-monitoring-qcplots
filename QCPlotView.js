@@ -99,7 +99,9 @@ var QCPlotView = function (options) {
     var c3options,
         channelMeta,
         channels,
-        data;
+        columns,
+        data,
+        names;
 
     data = _data.get('data');
     channelMeta = _data.get('channels');
@@ -114,12 +116,18 @@ var QCPlotView = function (options) {
       return;
     }
 
+    columns = [];
+    names = {};
+    channels.concat(['date']).forEach(function (channel) {
+      columns.push([channel].concat(data[channel]));
+      names[channel] = channelMeta[channel].title;
+    });
+
     c3options = Util.extend({}, _C3_DEFAULTS, {
       bindto: _c3El,
       data: {
-        columns: channels.concat(['date']).map(function (channel) {
-          return [channel].concat(data[channel]);
-        }),
+        columns: columns,
+        names: names,
         x: 'date'
       }
     });
